@@ -17,12 +17,12 @@ str(sms_raw$type)
 table(sms_raw$type)
 
 # build a corpus using the text mining (tm) package
-install.packages("tm")
+#install.packages("tm")
 library(tm)
 sms_corpus <- VCorpus(VectorSource(sms_raw$text))
 
 # examine the sms corpus
-print(sms_corpus)
+#print(sms_corpus)
 inspect(sms_corpus[1:2])
 
 as.character(sms_corpus[[1]])
@@ -39,7 +39,7 @@ sms_corpus_clean <- tm_map(sms_corpus_clean, removeNumbers) # remove numbers
 sms_corpus_clean <- tm_map(sms_corpus_clean, removeWords, stopwords()) # remove stop words
 sms_corpus_clean <- tm_map(sms_corpus_clean, removePunctuation) # remove punctuation
 
-install.packages("SnowballC")
+#install.packages("SnowballC")
 library(SnowballC)
 wordStem(c("learn", "learned", "learning", "learns"))
 
@@ -62,29 +62,29 @@ sms_train_labels <- sms_raw[1:4169, ]$type
 sms_test_labels  <- sms_raw[4170:5559, ]$type
 
 # check that the proportion of spam is similar
-prop.table(table(sms_train_labels))
-prop.table(table(sms_test_labels))
+#prop.table(table(sms_train_labels))
+#prop.table(table(sms_test_labels))
 
 # word cloud visualization
-install.packages("wordcloud")
-library(wordcloud)
-wordcloud(sms_corpus_clean, min.freq = 50, random.order = FALSE)
+#install.packages("wordcloud")
+#library(wordcloud)
+#wordcloud(sms_corpus_clean, min.freq = 50, random.order = FALSE)
 
 # subset the training data into spam and ham groups
-spam <- subset(sms_raw, type == "spam")
-ham  <- subset(sms_raw, type == "ham")
+#spam <- subset(sms_raw, type == "spam")
+#ham  <- subset(sms_raw, type == "ham")
 
-wordcloud(spam$text, max.words = 40, scale = c(3, 0.5))
-wordcloud(ham$text, max.words = 40, scale = c(3, 0.5))
+#wordcloud(spam$text, max.words = 40, scale = c(3, 0.5))
+#wordcloud(ham$text, max.words = 40, scale = c(3, 0.5))
 
-#sms_dtm_freq_train <- removeSparseTerms(sms_dtm_train, 0.999)
-#sms_dtm_freq_train
+sms_dtm_freq_train <- removeSparseTerms(sms_dtm_train, 0.999)
+sms_dtm_freq_train
 
 # indicator features for frequent words
-findFreqTerms(sms_dtm_train, 5)
+findFreqTerms(sms_dtm_train, 2)
 
 # save frequently-appearing terms to a character vector
-sms_freq_words <- findFreqTerms(sms_dtm_train, 5)
+sms_freq_words <- findFreqTerms(sms_dtm_train, 2)
 str(sms_freq_words)
 
 # create DTMs with only the frequent terms
@@ -101,17 +101,15 @@ sms_train <- apply(sms_dtm_freq_train, MARGIN = 2, convert_counts)
 sms_test  <- apply(sms_dtm_freq_test, MARGIN = 2, convert_counts)
 
 ## Step 3: Training a model on the data ----
-install.packages("e1071")
+#install.packages("e1071")
 library(e1071)
-sms_classifier <- naiveBayes(sms_train, sms_train_labels)
+#sms_classifier <- naiveBayes(sms_train, sms_train_labels)
 
 ## Step 4: Evaluating model performance ----
-sms_test_pred <- predict(sms_classifier, sms_test)
+#sms_test_pred <- predict(sms_classifier, sms_test)
 
 library(gmodels)
-CrossTable(sms_test_pred, sms_test_labels,
-           prop.chisq = FALSE, prop.t = FALSE, prop.r = FALSE,
-           dnn = c('predicted', 'actual'))
+#CrossTable(sms_test_pred, sms_test_labels, prop.chisq = FALSE, prop.t = FALSE, prop.r = FALSE, dnn = c('predicted', 'actual'))
 
 ## Step 5: Improving model performance ----
 sms_classifier2 <- naiveBayes(sms_train, sms_train_labels, laplace = 1)
